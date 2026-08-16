@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <!-- Brand -->
+    <color name="primary">#2563EB</color>
+    <color name="primary_variant">#1D4ED8</color>
+    <color name="secondary">#38BDF8</color>
+
+    <!-- Backgrounds -->
+    <color name="background">#F8FAFC</color>
+    <color name="surface">#FFFFFF</color>
+
+    <!-- Text -->
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+
+    <!-- Borders -->
+    <color name="outline">#E5E7EB</color>
+
+    <!-- Status -->
+    <color name="success">#22C55E</color>
+    <color name="warning">#F59E0B</color>
+    <color name="error">#EF4444</color>
+
+
+    <!-- Misc -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="priority_low">#4CAF50</color>
+    <color name="priority_medium">#FFC107</color>
+    <color name="priority_high">#F44336</color>
+
+    <!-- AI Tutor -->
+    <color name="ai_background">#0D1428</color>
+    <color name="ai_surface">#172139</color>
+    <color name="ai_surface_2">#1D2944</color>
+    <color name="ai_text_primary">#F4F7FF</color>
+    <color name="ai_text_secondary">#AAB5CC</color>
+    <color name="ai_hint">#7F8BA5</color>
+    <color name="ai_accent">#65A6FF</color>
+    <color name="ai_action_blue">#315A91</color>
+    <color name="ai_user">#2563EB</color>
+    <color name="ai_border">#33415F</color>
+    <color name="intellicampus_navy">#0B1F44</color>
+    <color name="intellicampus_blue">#1E63FF</color>
+    <color name="intellicampus_cyan">#00D1FF</color>
+    <color name="intellicampus_gold">#FFC107</color>
+    <color name="intellicampus_light">#E8F3FF</color>
+
+
 </resources>

@@ -1,0 +1,66 @@
+INTELLICAMPUS - AI TUTOR SETUP
+
+HOSTED DEMO CONFIGURATION (CURRENT)
+------------------------------------
+The Android app now defaults to the hosted FreeLLMAPI server:
+
+  Base URL: https://intellicampus-ai-4huh.onrender.com/v1
+
+The app automatically migrates older local/LAN URLs such as:
+  http://192.168.1.6:31415/v1
+  http://127.0.0.1:31415/v1
+  http://192.168.1.6:3001/v1
+
+to the hosted URL on startup.
+
+For the college demonstration, the phone only needs Internet access. The
+laptop running the FreeLLMAPI Desktop server and the Windows port proxy are
+NOT required.
+
+API KEY
+-------
+In Intellicampus -> AI Tutor -> Settings, enter the FreeLLMAPI unified API key.
+The key is stored locally on the device. Do NOT put OpenAI, Gemini, Groq or
+NVIDIA provider keys in the Android source code.
+
+The hosted FreeLLMAPI instance is configured with Gemini, Groq and NVIDIA NIM.
+
+AI TUTOR FEATURES
+-----------------
+- OpenAI-compatible FreeLLMAPI chat/completions endpoint
+- Hosted HTTPS backend for the college demo
+- Student batch, semester and academic year loaded from Firestore
+- Current semester raw syllabus loaded from Firestore
+- Theory units, practicals, objectives, prerequisites, textbooks and references
+  are supplied to the model as curriculum context
+- Course Outcomes are intentionally not used
+- Persistent chat history under users/{uid}/ai_chats
+- New chat
+- Reopen previous conversations
+- Delete individual conversations
+- Explain, Summarize, Quiz Me and Study Plan quick actions
+- Conversation context is retained while continuing a saved chat
+
+SYLLABUS GROUNDING
+------------------
+The tutor is instructed to treat the supplied Intellicampus curriculum as the
+student's actual syllabus, preserve its terminology, avoid inventing syllabus
+items, and clearly identify topics outside the supplied curriculum.
+
+RENDER NOTE
+-----------
+The hosted FreeLLMAPI service is on Render's free tier for the demonstration.
+Free services may sleep after inactivity, so the first AI request after a long
+idle period may take longer while the service wakes up. Test/wake the tutor
+shortly before the presentation.
+
+LOCAL DEVELOPMENT (OPTIONAL)
+-----------------------------
+FreeLLMAPI Desktop can still be used locally if needed. Its default Desktop
+API is normally:
+
+  http://127.0.0.1:31415/v1
+
+For a local phone demo, the phone and PC must be on the same network and a
+LAN-access/port-proxy configuration may be required. This is NOT needed for
+the hosted college-demo configuration above.

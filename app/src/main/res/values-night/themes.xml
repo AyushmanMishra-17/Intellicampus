@@ -1,7 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Intellicampus" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
+    <style name="Base.Theme.Intellicampus"
+        parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Primary -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Background -->
+        <item name="android:colorBackground">@color/background</item>
+
+        <!-- Surface -->
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
+        <!-- Error -->
+        <item name="colorError">@color/error</item>
+
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/primary_variant</item>
+
     </style>
+
 </resources>

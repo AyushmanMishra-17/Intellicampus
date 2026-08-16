@@ -1,0 +1,6 @@
+# Copy this file to local.properties (do NOT commit local.properties).
+# Android Studio normally creates local.properties automatically for the SDK path.
+# Keep your FreeLLMAPI credentials below.
+
+FREELLMAPI_BASE_URL=https://intellicampus-ai-4huh.onrender.com/v1
+FREELLMAPI_KEY=PASTE_YOUR_NEW_FREELLMAPI_UNIFIED_KEY_HERE

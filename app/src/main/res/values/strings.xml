@@ -1,3 +1,100 @@
 <resources>
-    <string name="app_name">Intellicampus</string>
+
+    <!-- ===================================================== -->
+    <!-- App -->
+    <!-- ===================================================== -->
+
+    <string name="app_name">IntelliCampus</string>
+
+    <!-- ===================================================== -->
+    <!-- Greetings -->
+    <!-- ===================================================== -->
+
+    <string name="good_morning">Good Morning ☀️</string>
+    <string name="good_afternoon">Good Afternoon 🌤️</string>
+    <string name="good_evening">Good Evening 🌙</string>
+    <string name="welcome_back">Ready to make today productive?</string>
+
+    <!-- ===================================================== -->
+    <!-- Home Dashboard -->
+    <!-- ===================================================== -->
+
+    <string name="today_overview">Today\'s Overview</string>
+    <string name="today_schedule">Today\'s Schedule</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="latest_notice">Latest Notice</string>
+    <string name="pending_assignments">Pending Assignments</string>
+
+    <string name="classes">Classes</string>
+    <string name="assignments">Assignments</string>
+    <string name="notices">Notices</string>
+
+    <!-- ===================================================== -->
+    <!-- Bottom Navigation -->
+    <!-- ===================================================== -->
+
+    <string name="home">Home</string>
+    <string name="schedule">Schedule</string>
+    <string name="academics">Academics</string>
+    <string name="ai_tutor">AI Tutor</string>
+    <string name="profile">Profile</string>
+
+    <!-- ===================================================== -->
+    <!-- Authentication -->
+    <!-- ===================================================== -->
+
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="logout">Logout</string>
+
+    <!-- ===================================================== -->
+    <!-- Buttons -->
+    <!-- ===================================================== -->
+
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="view_all">View All</string>
+    <string name="upload">Upload</string>
+    <string name="send">Send</string>
+
+    <!-- ===================================================== -->
+    <!-- AI Tutor -->
+    <!-- ===================================================== -->
+
+    <string name="ask_anything">Ask anything...</string>
+    <string name="type_message">Type your message...</string>
+    <string name="ai_thinking">AI is thinking...</string>
+
+    <!-- ===================================================== -->
+    <!-- Common -->
+    <!-- ===================================================== -->
+
+    <string name="loading">Loading...</string>
+    <string name="retry">Retry</string>
+    <string name="no_data">No data available</string>
+    <string name="coming_soon">Coming Soon</string>
+    <string name="room">Room</string>
+    <string name="lab">Lab</string>
+    <string name="no_classes">No classes scheduled today</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pinned_notice">Pinned Notice</string>
+    <string name="attachment">Attachment</string>
+    <string name="options">More Options</string>
+
+    <!-- ===================================================== -->
+    <!-- Accessibility -->
+    <!-- ===================================================== -->
+
+    <string name="profile_picture">Profile Picture</string>
+    <string name="notification">Notifications</string>
+    <string name="back">Back</string>
+
 </resources>

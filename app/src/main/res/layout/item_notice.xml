@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    style="?attr/materialCardViewElevatedStyle"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Category Chip -->
+
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_category_chip"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Academic" />
+
+        <!-- Pinned -->
+
+        <ImageView
+            android:id="@+id/ivPinned"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/pinned_notice"
+            android:src="@drawable/ic_pin"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tvCategory"
+            app:layout_constraintStart_toEndOf="@id/tvCategory"
+            app:layout_constraintTop_toTopOf="@id/tvCategory"
+            app:tint="?attr/colorPrimary"
+            tools:visibility="visible" />
+
+        <!-- Attachment -->
+
+        <ImageView
+            android:id="@+id/ivAttachment"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/attachment"
+            android:src="@drawable/ic_attachment"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/tvCategory"
+            app:layout_constraintStart_toEndOf="@id/ivPinned"
+            app:layout_constraintTop_toTopOf="@id/tvCategory"
+            app:tint="?attr/colorSecondary"
+            tools:visibility="visible" />
+
+        <!-- Menu -->
+
+        <ImageButton
+            android:id="@+id/btnOptions"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/options"
+            android:padding="8dp"
+            android:src="@drawable/ic_vert"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorOnSurface"/>
+
+        <!-- Title -->
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/btnOptions"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCategory"
+            tools:text="Mid Semester Examination Schedule" />
+
+        <!-- Description -->
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            tools:text="Please find the attached examination schedule." />
+
+        <!-- Date -->
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="?attr/colorOutline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            tools:text="31 Jul 2026" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

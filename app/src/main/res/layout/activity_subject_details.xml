@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F8FAFC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- ===================================================== -->
+        <!-- HEADER                                                -->
+        <!-- ===================================================== -->
+
+        <TextView
+            android:id="@+id/tvSubjectName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#0F172A"
+            android:textSize="29sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="2dp" />
+
+        <TextView
+            android:id="@+id/tvSubjectCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="#2563EB"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvCredits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textColor="#64748B"
+            android:textSize="14sp" />
+
+        <!-- ===================================================== -->
+        <!-- LEARNING OBJECTIVES                                   -->
+        <!-- ===================================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="LEARNING OBJECTIVES"
+            android:textColor="#2563EB"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <TextView
+            android:id="@+id/tvObjectives"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#475569"
+            android:textSize="15sp"
+            android:lineSpacingExtra="5dp" />
+
+        <!-- ===================================================== -->
+        <!-- PREREQUISITES                                        -->
+        <!-- ===================================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="PREREQUISITES"
+            android:textColor="#2563EB"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <TextView
+            android:id="@+id/tvPrerequisites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#475569"
+            android:textSize="15sp"
+            android:lineSpacingExtra="5dp" />
+
+        <!-- ===================================================== -->
+        <!-- COURSE UNITS / PRACTICALS                            -->
+        <!-- ===================================================== -->
+
+        <TextView
+            android:id="@+id/tvContentSectionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="COURSE UNITS"
+            android:textColor="#2563EB"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <LinearLayout
+            android:id="@+id/layoutUnits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical" />
+
+        <!-- ===================================================== -->
+        <!-- TEXTBOOKS                                             -->
+        <!-- ===================================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="TEXTBOOKS"
+            android:textColor="#2563EB"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <TextView
+            android:id="@+id/tvTextbooks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#475569"
+            android:textSize="15sp"
+            android:lineSpacingExtra="5dp" />
+
+        <!-- ===================================================== -->
+        <!-- REFERENCE BOOKS                                       -->
+        <!-- ===================================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="REFERENCE BOOKS"
+            android:textColor="#2563EB"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.08" />
+
+        <TextView
+            android:id="@+id/tvReferenceBooks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="35dp"
+            android:textColor="#475569"
+            android:textSize="15sp"
+            android:lineSpacingExtra="5dp" />
+
+    </LinearLayout>
+
+</ScrollView>

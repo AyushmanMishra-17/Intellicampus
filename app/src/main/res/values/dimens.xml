@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Screen -->
+    <dimen name="screen_padding">16dp</dimen>
+    <dimen name="screen_padding_large">24dp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+
+    <!-- Cards -->
+    <dimen name="card_radius">16dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+
+    <!-- Icons -->
+    <dimen name="icon_small">20dp</dimen>
+    <dimen name="icon_medium">24dp</dimen>
+    <dimen name="icon_large">32dp</dimen>
+
+    <!-- Avatar -->
+    <dimen name="profile_size">48dp</dimen>
+
+</resources>

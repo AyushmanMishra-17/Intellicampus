@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "248812466978",
+    "project_id": "intellicampus-4faf5",
+    "storage_bucket": "intellicampus-4faf5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248812466978:android:fdb15a1f2b179777b02b7b",
+        "android_client_info": {
+          "package_name": "com.ayushman.intellicampus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC38v_aJkP0gJ9G8EdE33TnQO5ovOv85m8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
