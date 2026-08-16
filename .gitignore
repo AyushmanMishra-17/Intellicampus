@@ -17,3 +17,7 @@ local.properties
 # OS
 .DS_Store
 Thumbs.db
+
+#files
+/DEMO_TOMORROW.txt
+/AI_TUTOR_SETUP.txt
