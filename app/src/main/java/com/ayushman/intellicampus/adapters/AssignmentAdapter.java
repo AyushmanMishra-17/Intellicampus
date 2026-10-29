@@ -20,27 +20,44 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.ViewHolder> {
+public class AssignmentAdapter
+        extends RecyclerView.Adapter<AssignmentAdapter.ViewHolder> {
 
     public interface OnAssignmentClickListener {
-        void onAssignmentClick(@NonNull Assignment assignment);
 
-        void onAssignmentLongClick(@NonNull Assignment assignment);
+        void onAssignmentClick(
+                @NonNull Assignment assignment
+        );
 
-        void onStatusChanged(@NonNull Assignment assignment, boolean isCompleted);
+        void onAssignmentLongClick(
+                @NonNull Assignment assignment
+        );
+
+        void onStatusChanged(
+                @NonNull Assignment assignment,
+                boolean isCompleted
+        );
     }
 
     private static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault());
+            new SimpleDateFormat(
+                    "dd MMM yyyy, hh:mm a",
+                    Locale.getDefault()
+            );
 
-    private final List<Assignment> assignmentList = new ArrayList<>();
+    private final List<Assignment> assignmentList =
+            new ArrayList<>();
+
     private final OnAssignmentClickListener listener;
 
-    public AssignmentAdapter(@NonNull OnAssignmentClickListener listener) {
+    public AssignmentAdapter(
+            @NonNull OnAssignmentClickListener listener) {
+
         this.listener = listener;
     }
 
-    public void setAssignments(List<Assignment> newAssignments) {
+    public void setAssignments(
+            List<Assignment> newAssignments) {
 
         List<Assignment> newList =
                 newAssignments == null
@@ -49,7 +66,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
 
         DiffUtil.DiffResult diffResult =
                 DiffUtil.calculateDiff(
-                        new AssignmentDiffCallback(assignmentList, newList));
+                        new AssignmentDiffCallback(
+                                assignmentList,
+                                newList
+                        )
+                );
 
         assignmentList.clear();
         assignmentList.addAll(newList);
@@ -59,64 +80,153 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_assignment, parent, false);
+        View view =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(
+                                R.layout.item_assignment,
+                                parent,
+                                false
+                        );
 
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(
+            @NonNull ViewHolder holder,
+            int position) {
 
-        Assignment assignment = assignmentList.get(position);
+        Assignment assignment =
+                assignmentList.get(position);
 
-        holder.tvTitle.setText(assignment.getTitle());
-        holder.tvSubject.setText(assignment.getSubject());
-
-        holder.tvDueDate.setText(
-                "Due • " +
-                        DATE_FORMAT.format(
-                                new Date(assignment.getDueDateTime()))
+        holder.tvTitle.setText(
+                assignment.getTitle()
         );
 
-        holder.cbCompleted.setOnCheckedChangeListener(null);
+        holder.tvSubject.setText(
+                assignment.getSubject()
+        );
 
+        /*
+         * Determine the current status.
+         *
+         * We calculate overdue directly from the due date
+         * as well as checking the stored status. This means
+         * the card can correctly show "Overdue" even if the
+         * stored Firestore status has not yet been updated.
+         */
         boolean completed =
-                assignment.getStatus() == Assignment.STATUS_COMPLETED;
+                assignment.getStatus()
+                        == Assignment.STATUS_COMPLETED;
 
-        holder.cbCompleted.setChecked(completed);
+        boolean overdue =
+                !completed &&
+                        assignment.getDueDateTime()
+                                <= System.currentTimeMillis();
 
-        // Dim completed assignments
-        float alpha = completed ? 0.55f : 1f;
+        /*
+         * Show the status directly on the assignment card.
+         */
+        String statusPrefix;
+
+        if (completed) {
+
+            statusPrefix = "Completed • ";
+
+        } else if (overdue) {
+
+            statusPrefix = "Overdue • ";
+
+        } else {
+
+            statusPrefix = "Due • ";
+        }
+
+        holder.tvDueDate.setText(
+                statusPrefix +
+                        DATE_FORMAT.format(
+                                new Date(
+                                        assignment.getDueDateTime()
+                                )
+                        )
+        );
+
+        /*
+         * Checkbox state.
+         */
+        holder.cbCompleted.setOnCheckedChangeListener(
+                null
+        );
+
+        holder.cbCompleted.setChecked(
+                completed
+        );
+
+        /*
+         * Dim completed assignments.
+         */
+        float alpha =
+                completed
+                        ? 0.55f
+                        : 1f;
 
         holder.tvTitle.setAlpha(alpha);
         holder.tvSubject.setAlpha(alpha);
         holder.tvDueDate.setAlpha(alpha);
 
-        // Strike-through title
+        /*
+         * Strike-through completed assignment title.
+         */
         if (completed) {
+
             holder.tvTitle.setPaintFlags(
                     holder.tvTitle.getPaintFlags()
-                            | Paint.STRIKE_THRU_TEXT_FLAG);
+                            | Paint.STRIKE_THRU_TEXT_FLAG
+            );
+
         } else {
+
             holder.tvTitle.setPaintFlags(
                     holder.tvTitle.getPaintFlags()
-                            & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            & (~Paint.STRIKE_THRU_TEXT_FLAG)
+            );
         }
 
+        /*
+         * Open Read Mode.
+         */
         holder.itemView.setOnClickListener(v ->
-                listener.onAssignmentClick(assignment));
+                listener.onAssignmentClick(
+                        assignment
+                )
+        );
 
+        /*
+         * Long press → Delete.
+         */
         holder.itemView.setOnLongClickListener(v -> {
-            listener.onAssignmentLongClick(assignment);
+
+            listener.onAssignmentLongClick(
+                    assignment
+            );
+
             return true;
         });
 
+        /*
+         * Checkbox → Completed / Pending.
+         */
         holder.cbCompleted.setOnCheckedChangeListener(
                 (buttonView, isChecked) ->
-                        listener.onStatusChanged(assignment, isChecked));
+                        listener.onStatusChanged(
+                                assignment,
+                                isChecked
+                        )
+        );
     }
 
     @Override
@@ -124,30 +234,51 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
         return assignmentList.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder
+            extends RecyclerView.ViewHolder {
 
         final TextView tvTitle;
         final TextView tvSubject;
         final TextView tvDueDate;
         final MaterialCheckBox cbCompleted;
 
-        ViewHolder(@NonNull View itemView) {
+        ViewHolder(
+                @NonNull View itemView) {
+
             super(itemView);
 
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvSubject = itemView.findViewById(R.id.tvSubject);
-            tvDueDate = itemView.findViewById(R.id.tvDueDate);
-            cbCompleted = itemView.findViewById(R.id.cbCompleted);
+            tvTitle =
+                    itemView.findViewById(
+                            R.id.tvTitle
+                    );
+
+            tvSubject =
+                    itemView.findViewById(
+                            R.id.tvSubject
+                    );
+
+            tvDueDate =
+                    itemView.findViewById(
+                            R.id.tvDueDate
+                    );
+
+            cbCompleted =
+                    itemView.findViewById(
+                            R.id.cbCompleted
+                    );
         }
     }
 
-    private static class AssignmentDiffCallback extends DiffUtil.Callback {
+    private static class AssignmentDiffCallback
+            extends DiffUtil.Callback {
 
         private final List<Assignment> oldList;
         private final List<Assignment> newList;
 
-        AssignmentDiffCallback(@NonNull List<Assignment> oldList,
-                               @NonNull List<Assignment> newList) {
+        AssignmentDiffCallback(
+                @NonNull List<Assignment> oldList,
+                @NonNull List<Assignment> newList) {
+
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -163,11 +294,15 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
         }
 
         @Override
-        public boolean areItemsTheSame(int oldItemPosition,
-                                       int newItemPosition) {
+        public boolean areItemsTheSame(
+                int oldItemPosition,
+                int newItemPosition) {
 
-            String oldId = oldList.get(oldItemPosition).getId();
-            String newId = newList.get(newItemPosition).getId();
+            String oldId =
+                    oldList.get(oldItemPosition).getId();
+
+            String newId =
+                    newList.get(newItemPosition).getId();
 
             if (oldId == null || newId == null) {
                 return false;
@@ -177,11 +312,15 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.Vi
         }
 
         @Override
-        public boolean areContentsTheSame(int oldItemPosition,
-                                          int newItemPosition) {
+        public boolean areContentsTheSame(
+                int oldItemPosition,
+                int newItemPosition) {
 
-            return oldList.get(oldItemPosition)
-                    .equals(newList.get(newItemPosition));
+            return oldList
+                    .get(oldItemPosition)
+                    .equals(
+                            newList.get(newItemPosition)
+                    );
         }
     }
 }

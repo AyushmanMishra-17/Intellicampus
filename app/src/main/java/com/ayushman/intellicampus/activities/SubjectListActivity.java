@@ -71,7 +71,7 @@ public class SubjectListActivity extends AppCompatActivity {
     private void setupRecyclerView() {
 
         adapter =
-                new SubjectAdapter(subjectList);
+                new SubjectAdapter(this, subjectList);
 
         binding.rvSubjects.setLayoutManager(
                 new LinearLayoutManager(this)

@@ -89,14 +89,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Notes"
+                        android:text="Syllabus"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="View your notes"/>
+                        android:text="View your Syllabus"/>
 
                 </LinearLayout>
 

@@ -7,17 +7,25 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.ayushman.intellicampus.R;
+import com.ayushman.intellicampus.constants.FirestoreConstants;
 import com.ayushman.intellicampus.databinding.ActivitySubjectDetailsBinding;
 import com.ayushman.intellicampus.models.Practical;
 import com.ayushman.intellicampus.models.Subject;
 import com.ayushman.intellicampus.models.Unit;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class SubjectDetailsActivity extends AppCompatActivity {
+
+    public static final String EXTRA_SUBJECT_ID = "subject_id";
+    public static final String EXTRA_COURSE = "course";
+    public static final String EXTRA_SEMESTER = "semester";
 
     private ActivitySubjectDetailsBinding binding;
 
@@ -51,16 +59,98 @@ public class SubjectDetailsActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        Subject subject =
-                (Subject) getIntent()
-                        .getSerializableExtra("subject");
+        String subjectId =
+                getIntent().getStringExtra(EXTRA_SUBJECT_ID);
 
-        if (subject == null) {
+        String course =
+                getIntent().getStringExtra(EXTRA_COURSE);
+
+        int semester =
+                getIntent().getIntExtra(EXTRA_SEMESTER, 0);
+
+        if (subjectId == null ||
+                subjectId.trim().isEmpty() ||
+                course == null ||
+                course.trim().isEmpty() ||
+                semester <= 0) {
+
+            Toast.makeText(
+                    this,
+                    "Unable to open subject.",
+                    Toast.LENGTH_LONG
+            ).show();
+
             finish();
             return;
         }
 
-        displaySubject(subject);
+        loadSubject(
+                course.trim(),
+                semester,
+                subjectId.trim()
+        );
+    }
+
+    // ========================================================
+    // LOAD SUBJECT
+    // ========================================================
+
+    private void loadSubject(
+            String course,
+            int semester,
+            String subjectId
+    ) {
+
+        FirebaseFirestore.getInstance()
+                .collection(FirestoreConstants.CURRICULUM)
+                .document(course)
+                .collection("semester_" + semester)
+                .document(subjectId)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    if (!document.exists()) {
+                        Toast.makeText(
+                                this,
+                                "Subject information was not found.",
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        finish();
+                        return;
+                    }
+
+                    Subject subject =
+                            document.toObject(Subject.class);
+
+                    if (subject == null) {
+                        Toast.makeText(
+                                this,
+                                "Invalid subject information.",
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        finish();
+                        return;
+                    }
+
+                    subject.setId(document.getId());
+
+                    displaySubject(subject);
+                })
+                .addOnFailureListener(error -> {
+
+                    Toast.makeText(
+                            this,
+                            "Unable to load subject: " +
+                                    (error.getMessage() == null
+                                            ? "Unknown error"
+                                            : error.getMessage()),
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    finish();
+                });
     }
 
     // ========================================================
@@ -271,7 +361,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                 new TextView(this);
 
         sectionTitle.setText(title);
-        sectionTitle.setTextSize(15);
+        sectionTitle.setTextSize(14);
         sectionTitle.setTextColor(ACCENT);
         sectionTitle.setTypeface(
                 null,
@@ -284,7 +374,7 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
 
-        titleParams.topMargin = dp(4);
+        titleParams.topMargin = dp(8);
         titleParams.bottomMargin = dp(10);
 
         binding.layoutUnits.addView(
@@ -292,12 +382,9 @@ public class SubjectDetailsActivity extends AppCompatActivity {
                 titleParams
         );
 
-        for (int i = 0;
-             i < practicals.size();
-             i++) {
+        int fallbackNumber = 1;
 
-            Practical practical =
-                    practicals.get(i);
+        for (Practical practical : practicals) {
 
             if (practical == null) {
                 continue;
@@ -306,9 +393,11 @@ public class SubjectDetailsActivity extends AppCompatActivity {
             binding.layoutUnits.addView(
                     createPracticalCard(
                             practical,
-                            i + 1
+                            fallbackNumber
                     )
             );
+
+            fallbackNumber++;
         }
     }
 
