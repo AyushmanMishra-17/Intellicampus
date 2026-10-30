@@ -1,0 +1,27 @@
+INTELLICAMPUS — RESTORE AND RUN
+Bundle prepared: 30 October 2026
+
+This archive is based on the supplied IntelliCampus project snapshot and includes the verified AI Tutor URL correction that was tested with the working deployment.
+
+OPEN IN ANDROID STUDIO
+1. Extract this ZIP completely to a normal writable folder.
+2. In Android Studio choose File > Open and select the extracted IntelliCampus folder (the folder containing settings.gradle.kts).
+3. Allow Gradle sync to finish. Android Studio may download the Gradle distribution and dependencies.
+4. If prompted, install the required Android SDK platform/build tools for compileSdk 36.
+5. Connect an Android device with USB debugging enabled, or use an emulator, then press Run.
+
+FIREBASE
+- The included app/google-services.json is the configuration present in the supplied project snapshot.
+- Its package name is com.ayushman.intellicampus and project ID is intellicampus-4faf5.
+- Confirm that this is still the Firebase project you intend to use.
+
+AI TUTOR
+- AITutorFragment.java points to https://intellicampus-ai-e4pw.onrender.com/v1, the deployment verified in the prior working test.
+- Open AI Tutor > Settings and enter your own unified FreeLLMAPI API key on the device. No API key is included in this archive.
+- A key saved in the app is local to that installation/device; it is not embedded in the APK.
+
+IMPORTANT
+- This is a source project ZIP, not a signed release APK. Build a new APK from Android Studio after testing.
+- No keystore, signing password, local.properties, .git history, Gradle cache, or generated build outputs are included.
+- Keep local.properties and signing credentials private; do not commit them to GitHub.
+- The project has not been built in this packaging environment. Open it in Android Studio and verify Gradle sync/build on your machine.

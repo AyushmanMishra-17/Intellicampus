@@ -68,7 +68,7 @@ public class AITutorFragment extends Fragment {
      * cannot accidentally point the AI Tutor at a local/LAN server.
      */
     private static final String FREELLMAPI_BASE_URL =
-            "https://intellicampus-ai-zy8i.onrender.com/v1";
+            "https://intellicampus-ai-e4pw.onrender.com/v1";
 
     private final AcademicBatchRepository batchRepository =
             new AcademicBatchRepository();

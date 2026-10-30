@@ -1,5 +1,4 @@
-```java
-        package com.ayushman.intellicampus.adapters;
+package com.ayushman.intellicampus.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +15,8 @@ import com.ayushman.intellicampus.activities.SubjectDetailsActivity;
 import com.ayushman.intellicampus.models.Subject;
 
 import java.util.List;
-import java.util.Locale;
 
-public class SubjectAdapter
-        extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
+public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder> {
 
     private final Context context;
     private final List<Subject> subjectList;
@@ -31,49 +28,37 @@ public class SubjectAdapter
 
     @NonNull
     @Override
-    public SubjectViewHolder onCreateViewHolder(
-            @NonNull ViewGroup parent, int viewType) {
-
-        View view = LayoutInflater.from(parent.getContext())
+    public SubjectViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.item_subject, parent, false);
 
         return new SubjectViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(
-            @NonNull SubjectViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull SubjectViewHolder holder, int position) {
         Subject subject = subjectList.get(position);
 
-        String code = subject.getCourseCode();
-        String name = subject.getCourseName();
-        String type = subject.getCourseType();
-        String id = subject.getId();
-
-        holder.tvSubjectCode.setText(
-                isBlank(code) ? (isBlank(id) ? "Subject code unavailable" : id) : code
-        );
-
-        holder.tvSubjectName.setText(
-                isBlank(name) ? "Untitled subject" : name
-        );
-
-        holder.tvCourseType.setText(
-                isBlank(type) ? "COURSE" : type.trim().toUpperCase(Locale.ROOT)
-        );
+        holder.tvSubjectCode.setText(subject.getCode());
+        holder.tvSubjectName.setText(subject.getName());
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, SubjectDetailsActivity.class);
+
+            /*
+             * Do NOT pass the complete Subject object through Intent.
+             * The Subject can contain a large syllabus, which can exceed
+             * Android's Binder transaction limit and crash the app.
+             *
+             * Instead, pass only the information required to retrieve
+             * the subject from Firestore.
+             */
             intent.putExtra(SubjectDetailsActivity.EXTRA_SUBJECT_ID, subject.getId());
             intent.putExtra(SubjectDetailsActivity.EXTRA_COURSE, subject.getCourse());
             intent.putExtra(SubjectDetailsActivity.EXTRA_SEMESTER, subject.getSemester());
+
             context.startActivity(intent);
         });
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
     }
 
     @Override
@@ -83,16 +68,14 @@ public class SubjectAdapter
 
     static class SubjectViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView tvSubjectCode;
-        final TextView tvSubjectName;
-        final TextView tvCourseType;
+        TextView tvSubjectCode;
+        TextView tvSubjectName;
 
-        SubjectViewHolder(@NonNull View itemView) {
+        public SubjectViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvSubjectCode = itemView.findViewById(R.id.tvSubjectCode);
             tvSubjectName = itemView.findViewById(R.id.tvSubjectName);
-            tvCourseType = itemView.findViewById(R.id.tvCredits);
         }
     }
 }

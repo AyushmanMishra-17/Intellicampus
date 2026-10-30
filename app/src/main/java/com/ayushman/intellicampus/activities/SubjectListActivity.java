@@ -296,7 +296,7 @@ public class SubjectListActivity extends AppCompatActivity {
         viewModel.loadSubjects(
                 course,
                 semester,
-                null
+                batch
         );
     }
 

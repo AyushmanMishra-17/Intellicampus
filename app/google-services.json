@@ -1,7 +1,6 @@
 {
   "project_info": {
     "project_number": "248812466978",
-    "firebase_url": "https://intellicampus-4faf5-default-rtdb.firebaseio.com",
     "project_id": "intellicampus-4faf5",
     "storage_bucket": "intellicampus-4faf5.firebasestorage.app"
   },
@@ -13,12 +12,7 @@
           "package_name": "com.ayushman.intellicampus"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "248812466978-7mq25tr10uh76b8rloe6v42tqe6o4ik2.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyC38v_aJkP0gJ9G8EdE33TnQO5ovOv85m8"
@@ -26,12 +20,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "248812466978-7mq25tr10uh76b8rloe6v42tqe6o4ik2.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

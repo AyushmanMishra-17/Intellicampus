@@ -1,6 +1,6 @@
-# Copy this file to local.properties (do NOT commit local.properties).
-# Android Studio normally creates local.properties automatically for the SDK path.
-# Keep your FreeLLMAPI credentials below.
-
-FREELLMAPI_BASE_URL=https://intellicampus-ai-4huh.onrender.com/v1
-FREELLMAPI_KEY=PASTE_YOUR_NEW_FREELLMAPI_UNIFIED_KEY_HERE
+# Copy this file to local.properties only if you need a reference.
+# Android Studio normally creates local.properties and sets sdk.dir automatically.
+# Do NOT commit local.properties. Do not put a personal API key in source control.
+# The AI Tutor currently uses this verified Render endpoint in AITutorFragment.java:
+# https://intellicampus-ai-e4pw.onrender.com/v1
+# Enter your own unified FreeLLMAPI key in AI Tutor > Settings on each device.

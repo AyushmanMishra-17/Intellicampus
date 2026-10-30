@@ -2,16 +2,12 @@ package com.ayushman.intellicampus.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ayushman.intellicampus.R;
-import com.ayushman.intellicampus.constants.RoleConstants;
-import com.ayushman.intellicampus.constants.UserConstants;
-import com.ayushman.intellicampus.firebase.FirestoreManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
@@ -39,9 +35,6 @@ public class AssignmentReadActivity extends AppCompatActivity {
     public static final String EXTRA_STATUS =
             "assignment_status";
 
-    public static final String EXTRA_CREATED_BY =
-            "assignment_created_by";
-
     public static final String EXTRA_EDIT =
             "assignment_edit";
 
@@ -57,21 +50,15 @@ public class AssignmentReadActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_assignment_read);
 
-        /*
-         * Toolbar.
-         */
+        // Toolbar
         MaterialToolbar toolbar =
                 findViewById(R.id.toolbar);
 
-        /*
-         * Edit button.
-         */
+        // Edit button
         MaterialButton btnEditAssignment =
                 findViewById(R.id.btnEditAssignment);
 
-        /*
-         * Text views.
-         */
+        // Text views
         TextView tvTitle =
                 findViewById(R.id.tvReadTitle);
 
@@ -91,131 +78,47 @@ public class AssignmentReadActivity extends AppCompatActivity {
                 findViewById(R.id.tvReadDescription);
 
         /*
-         * Back arrow.
+         * Back arrow
          */
         toolbar.setNavigationOnClickListener(v ->
                 getOnBackPressedDispatcher().onBackPressed()
         );
 
         /*
-         * Hide Edit by default.
+         * Edit Assignment
          *
-         * The role and ownership check is asynchronous,
-         * so the button must remain hidden until permission
-         * has been confirmed.
+         * The actual edit form already exists inside
+         * AssignmentFragment. We send an edit request
+         * back to that Fragment.
          */
-        btnEditAssignment.setVisibility(
-                View.GONE
-        );
+        btnEditAssignment.setOnClickListener(v -> {
 
-        /*
-         * Retrieve the creator UID.
-         *
-         * Admins can edit any assignment.
-         * Teachers can edit only assignments they created.
-         * Students cannot edit assignments.
-         */
-        String createdBy =
-                getIntent().getStringExtra(
-                        EXTRA_CREATED_BY
-                );
+            Intent resultIntent = new Intent();
 
-        FirestoreManager.getInstance()
-                .getCurrentUserDocument()
-                .get()
-                .addOnSuccessListener(document -> {
+            resultIntent.putExtra(
+                    EXTRA_EDIT,
+                    true
+            );
 
-                    if (!document.exists()) {
-                        return;
-                    }
+            setResult(
+                    RESULT_OK,
+                    resultIntent
+            );
 
-                    String role =
-                            document.getString(
-                                    UserConstants.ROLE
-                            );
-
-                    boolean isAdmin =
-                            RoleConstants.ADMIN.equalsIgnoreCase(
-                                    role
-                            );
-
-                    boolean isTeacher =
-                            RoleConstants.TEACHER.equalsIgnoreCase(
-                                    role
-                            );
-
-                    String currentUid =
-                            FirestoreManager.getInstance()
-                                    .getCurrentUserId();
-
-                    /*
-                     * A teacher may edit only an assignment
-                     * created by that same teacher.
-                     */
-                    boolean teacherOwnsAssignment =
-                            isTeacher &&
-                                    currentUid != null &&
-                                    createdBy != null &&
-                                    currentUid.equals(
-                                            createdBy
-                                    );
-
-                    boolean canEdit =
-                            isAdmin ||
-                                    teacherOwnsAssignment;
-
-                    if (!canEdit) {
-                        return;
-                    }
-
-                    /*
-                     * Permission confirmed.
-                     */
-                    btnEditAssignment.setVisibility(
-                            View.VISIBLE
-                    );
-
-                    btnEditAssignment.setOnClickListener(v -> {
-
-                        Intent resultIntent =
-                                new Intent();
-
-                        resultIntent.putExtra(
-                                EXTRA_EDIT,
-                                true
-                        );
-
-                        setResult(
-                                RESULT_OK,
-                                resultIntent
-                        );
-
-                        finish();
-                    });
-                })
-                .addOnFailureListener(
-                        e -> btnEditAssignment.setVisibility(
-                                View.GONE
-                        )
-                );
+            finish();
+        });
 
         /*
          * Retrieve assignment data.
          */
         String title =
-                getIntent().getStringExtra(
-                        EXTRA_TITLE
-                );
+                getIntent().getStringExtra(EXTRA_TITLE);
 
         String subject =
-                getIntent().getStringExtra(
-                        EXTRA_SUBJECT
-                );
+                getIntent().getStringExtra(EXTRA_SUBJECT);
 
         String description =
-                getIntent().getStringExtra(
-                        EXTRA_DESCRIPTION
-                );
+                getIntent().getStringExtra(EXTRA_DESCRIPTION);
 
         long dueDate =
                 getIntent().getLongExtra(
@@ -236,27 +139,25 @@ public class AssignmentReadActivity extends AppCompatActivity {
                 );
 
         /*
-         * Title.
+         * Title
          */
         tvTitle.setText(
-                title == null ||
-                        title.trim().isEmpty()
+                title == null || title.trim().isEmpty()
                         ? "Assignment"
                         : title
         );
 
         /*
-         * Subject.
+         * Subject
          */
         tvSubject.setText(
-                subject == null ||
-                        subject.trim().isEmpty()
+                subject == null || subject.trim().isEmpty()
                         ? "No subject"
                         : subject
         );
 
         /*
-         * Due date.
+         * Due date
          */
         if (dueDate > 0) {
 
@@ -275,7 +176,7 @@ public class AssignmentReadActivity extends AppCompatActivity {
         }
 
         /*
-         * Priority.
+         * Priority
          */
         tvPriority.setText(
                 "Priority • " +
@@ -283,7 +184,7 @@ public class AssignmentReadActivity extends AppCompatActivity {
         );
 
         /*
-         * Status.
+         * Status
          */
         tvStatus.setText(
                 "Status • " +
@@ -291,7 +192,10 @@ public class AssignmentReadActivity extends AppCompatActivity {
         );
 
         /*
-         * Description.
+         * Description
+         *
+         * The description remains fully scrollable and
+         * selectable in the XML layout.
          */
         if (description == null ||
                 description.trim().isEmpty()) {
@@ -302,9 +206,7 @@ public class AssignmentReadActivity extends AppCompatActivity {
 
         } else {
 
-            tvDescription.setText(
-                    description
-            );
+            tvDescription.setText(description);
         }
     }
 
