@@ -1,4 +1,5 @@
-package com.ayushman.intellicampus.adapters;
+```java
+        package com.ayushman.intellicampus.adapters;
 
 import android.content.Context;
 import android.content.Intent;
