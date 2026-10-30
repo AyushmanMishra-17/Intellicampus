@@ -27,6 +27,44 @@ public class AssignmentViewModel extends ViewModel {
         return assignments;
     }
 
+    /**
+     * Loads assignments targeted to a specific
+     * programme, batch and semester.
+     */
+    public void loadAssignments(
+            String programme,
+            String batch,
+            int semester) {
+
+        if (listenerRegistration != null) {
+            listenerRegistration.remove();
+        }
+
+        listenerRegistration = repository.getAssignments(
+                programme,
+                batch,
+                semester,
+                new FirestoreCallback<List<Assignment>>() {
+
+                    @Override
+                    public void onSuccess(List<Assignment> result) {
+                        assignments.postValue(result);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    /**
+     * Compatibility method.
+     * Loads all assignments.
+     *
+     * This is kept so existing screens do not break
+     * until they are migrated to targeted loading.
+     */
     public void loadAssignments() {
 
         if (listenerRegistration != null) {
@@ -48,8 +86,9 @@ public class AssignmentViewModel extends ViewModel {
                 });
     }
 
-    public void addAssignment(Assignment assignment,
-                              FirestoreCallback<Void> callback) {
+    public void addAssignment(
+            Assignment assignment,
+            FirestoreCallback<Void> callback) {
 
         repository.addAssignment(assignment, callback);
     }
@@ -72,8 +111,9 @@ public class AssignmentViewModel extends ViewModel {
                 });
     }
 
-    public void updateAssignment(Assignment assignment,
-                                 FirestoreCallback<Void> callback) {
+    public void updateAssignment(
+            Assignment assignment,
+            FirestoreCallback<Void> callback) {
 
         repository.updateAssignment(assignment, callback);
     }
@@ -96,8 +136,9 @@ public class AssignmentViewModel extends ViewModel {
                 });
     }
 
-    public void deleteAssignment(String assignmentId,
-                                 FirestoreCallback<Void> callback) {
+    public void deleteAssignment(
+            String assignmentId,
+            FirestoreCallback<Void> callback) {
 
         repository.deleteAssignment(assignmentId, callback);
     }

@@ -1,30 +1,37 @@
 package com.ayushman.intellicampus.repositories;
 
-import com.ayushman.intellicampus.constants.FirestoreConstants;
-import com.ayushman.intellicampus.firebase.FirestoreManager;
+import androidx.annotation.NonNull;
+
 import com.ayushman.intellicampus.models.Subject;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudyRepository {
 
+    private final FirebaseFirestore db;
+
+    public StudyRepository() {
+        db = FirebaseFirestore.getInstance();
+    }
+
+    /**
+     * Callback used when loading subjects.
+     */
     public interface SubjectsCallback {
-        void onSuccess(List<Subject> subjects);
+
+        void onSuccess(List<Subject> result);
+
         void onError(Exception e);
     }
 
-    private final FirebaseFirestore firestore;
-
-    public StudyRepository() {
-        firestore = FirestoreManager
-                .getInstance()
-                .getFirestore();
-    }
-
+    /**
+     * Listen for subjects belonging to a particular
+     * programme, semester and academic session.
+     */
     public ListenerRegistration listenToSubjects(
             String course,
             int semester,
@@ -32,134 +39,178 @@ public class StudyRepository {
             SubjectsCallback callback
     ) {
 
-        return firestore
-                .collection(FirestoreConstants.CURRICULUM)
+        course = course == null
+                ? ""
+                : course.trim();
+
+        academicSession = academicSession == null
+                ? ""
+                : academicSession.trim();
+
+        // Lambda expressions require captured local variables
+        // to be final or effectively final.
+        final String sessionFilter = academicSession;
+
+        String semesterPath = "semester_" + semester;
+
+        return db.collection("curriculum")
                 .document(course)
-                .collection("semester_" + semester)
-                .addSnapshotListener((snapshots, error) -> {
+                .collection(semesterPath)
+                .addSnapshotListener((snapshots, e) -> {
 
-                    if (error != null) {
-                        callback.onError(error);
+                    if (e != null) {
+                        if (callback != null) {
+                            callback.onError(e);
+                        }
                         return;
                     }
 
-                    List<Subject> allSubjects =
-                            new ArrayList<>();
+                    if (snapshots == null) {
+                        if (callback != null) {
+                            callback.onSuccess(new ArrayList<>());
+                        }
+                        return;
+                    }
 
-                    if (snapshots != null) {
+                    List<Subject> result = new ArrayList<>();
 
-                        for (DocumentSnapshot document :
-                                snapshots.getDocuments()) {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot document
+                            : snapshots) {
 
+                        try {
                             Subject subject =
-                                    document.toObject(
-                                            Subject.class
-                                    );
+                                    document.toObject(Subject.class);
 
-                            if (subject == null) {
-                                continue;
+                            /*
+                             * Keep the Firestore document ID available
+                             * as the subject ID.
+                             */
+                            if (subject.getId() == null ||
+                                    subject.getId().trim().isEmpty()) {
+
+                                subject.setId(document.getId());
                             }
 
-                            subject.setId(
-                                    document.getId()
-                            );
+                            /*
+                             * If the document contains an academic
+                             * session, filter it here.
+                             */
+                            if (!sessionFilter.isEmpty()) {
 
-                            allSubjects.add(subject);
+                                String documentSession =
+                                        document.getString(
+                                                "academicSession"
+                                        );
+
+                                if (documentSession != null &&
+                                        !documentSession.trim().isEmpty() &&
+                                        !sessionFilter.equalsIgnoreCase(
+                                                documentSession.trim()
+                                        )) {
+
+                                    continue;
+                                }
+                            }
+
+                            result.add(subject);
+
+                        } catch (Exception ignored) {
+                            /*
+                             * Ignore malformed individual documents
+                             * rather than failing the entire subject list.
+                             */
                         }
                     }
 
-                    /*
-                     * Batch-aware curriculum:
-                     *
-                     * If the imported curriculum contains an
-                     * academicSession matching the student's
-                     * admission batch, use those subjects.
-                     *
-                     * If older Firestore data has no session
-                     * information, preserve compatibility and
-                     * return the existing semester subjects.
-                     */
-                    if (academicSession == null ||
-                            academicSession.trim().isEmpty()) {
-
-                        callback.onSuccess(allSubjects);
-                        return;
-                    }
-
-                    List<Subject> sessionSubjects =
-                            new ArrayList<>();
-
-                    boolean hasSessionData = false;
-
-                    for (Subject subject : allSubjects) {
-
-                        String subjectSession =
-                                subject.getAcademicSession();
-
-                        if (subjectSession != null &&
-                                !subjectSession.trim().isEmpty()) {
-
-                            hasSessionData = true;
-
-                            if (academicSession.equalsIgnoreCase(
-                                    subjectSession.trim()
-                            )) {
-
-                                sessionSubjects.add(subject);
-                            }
-                        }
-                    }
-
-                    if (hasSessionData) {
-                        callback.onSuccess(sessionSubjects);
-                    } else {
-                        callback.onSuccess(allSubjects);
+                    if (callback != null) {
+                        callback.onSuccess(result);
                     }
                 });
     }
 
+    /**
+     * Convenience overload when no academic session is specified.
+     */
+    /**
+     * Compatibility method used by AITutorFragment.
+     */
     public void getSubjects(
             String course,
             int semester,
             String academicSession,
             SubjectsCallback callback
     ) {
-        firestore
-                .collection(FirestoreConstants.CURRICULUM)
+        course = course == null
+                ? ""
+                : course.trim();
+
+        academicSession = academicSession == null
+                ? ""
+                : academicSession.trim();
+
+        final String sessionFilter = academicSession;
+
+        String semesterPath = "semester_" + semester;
+
+        db.collection("curriculum")
                 .document(course)
-                .collection("semester_" + semester)
+                .collection(semesterPath)
                 .get()
                 .addOnSuccessListener(snapshots -> {
-                    List<Subject> allSubjects = new ArrayList<>();
-                    for (DocumentSnapshot document : snapshots.getDocuments()) {
-                        Subject subject = document.toObject(Subject.class);
-                        if (subject == null) continue;
-                        subject.setId(document.getId());
-                        allSubjects.add(subject);
-                    }
 
-                    if (academicSession == null || academicSession.trim().isEmpty()) {
-                        callback.onSuccess(allSubjects);
-                        return;
-                    }
+                    List<Subject> result = new ArrayList<>();
 
-                    List<Subject> sessionSubjects = new ArrayList<>();
-                    boolean hasSessionData = false;
-                    for (Subject subject : allSubjects) {
-                        String session = subject.getAcademicSession();
-                        if (session != null && !session.trim().isEmpty()) {
-                            hasSessionData = true;
-                            if (academicSession.equalsIgnoreCase(session.trim())) {
-                                sessionSubjects.add(subject);
+                    if (snapshots != null) {
+
+                        for (com.google.firebase.firestore.QueryDocumentSnapshot document
+                                : snapshots) {
+
+                            try {
+                                Subject subject =
+                                        document.toObject(Subject.class);
+
+                                if (subject.getId() == null ||
+                                        subject.getId().trim().isEmpty()) {
+
+                                    subject.setId(document.getId());
+                                }
+
+                                if (!sessionFilter.isEmpty()) {
+
+                                    String documentSession =
+                                            document.getString(
+                                                    "academicSession"
+                                            );
+
+                                    if (documentSession != null &&
+                                            !documentSession.trim().isEmpty() &&
+                                            !sessionFilter.equalsIgnoreCase(
+                                                    documentSession.trim()
+                                            )) {
+
+                                        continue;
+                                    }
+                                }
+
+                                result.add(subject);
+
+                            } catch (Exception ignored) {
+                                // Ignore malformed documents.
                             }
                         }
                     }
-                    callback.onSuccess(hasSessionData ? sessionSubjects : allSubjects);
-                })
-                .addOnFailureListener(callback::onError);
-    }
 
-    // Backwards-compatible overload
+                    if (callback != null) {
+                        callback.onSuccess(result);
+                    }
+                })
+                .addOnFailureListener(e -> {
+
+                    if (callback != null) {
+                        callback.onError(e);
+                    }
+                });
+    }
     public ListenerRegistration listenToSubjects(
             String course,
             int semester,

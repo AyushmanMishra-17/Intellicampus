@@ -37,7 +37,7 @@ public class DashboardRepository {
         // ------------------------
 
         dashboard.setAssignmentCount(
-                assignmentRepository.getAssignmentCount(assignments));
+                assignments.size());
 
         dashboard.setUpcomingAssignment(
                 assignmentRepository.getUpcomingAssignment(assignments));
