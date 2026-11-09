@@ -20,12 +20,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        buildConfigField(
-            "String",
-            "FREELLMAPI_KEY",
-            "\"${project.findProperty("FREELLMAPI_KEY") ?: ""}\""
-        )
     }
 
     buildTypes {

@@ -1,6 +1,4 @@
-# Copy this file to local.properties only if you need a reference.
 # Android Studio normally creates local.properties and sets sdk.dir automatically.
-# Do NOT commit local.properties. Do not put a personal API key in source control.
-# The AI Tutor currently uses this verified Render endpoint in AITutorFragment.java:
-# https://intellicampus-ai-e4pw.onrender.com/v1
-# Enter your own unified FreeLLMAPI key in AI Tutor > Settings on each device.
+# Do NOT commit local.properties.
+# AI Tutor API keys are now entered per student in AI Tutor > Settings and are
+# encrypted locally with Android Keystore. Do not place API keys in this file.

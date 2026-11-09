@@ -1,8 +1,5 @@
 package com.ayushman.intellicampus.fragments;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,15 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.AdapterView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.res.ColorStateList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import com.ayushman.intellicampus.BuildConfig;
+import com.ayushman.intellicampus.ai.AiProviderConfig;
+import com.ayushman.intellicampus.ai.AiProviderManager;
 import com.ayushman.intellicampus.R;
 import com.ayushman.intellicampus.constants.FirestoreConstants;
 import com.ayushman.intellicampus.constants.UserConstants;
@@ -42,13 +44,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,18 +56,6 @@ import java.util.concurrent.Executors;
 public class AITutorFragment extends Fragment {
 
     private static final String TAG = "AITutor";
-    private static final String PREFS = "ai_tutor_settings";
-    private static final String KEY_API_KEY = "api_key";
-
-    /*
-     * FreeLLMAPI server hosted on Render.
-     *
-     * This URL is intentionally fixed in the application so users
-     * cannot accidentally point the AI Tutor at a local/LAN server.
-     */
-    private static final String FREELLMAPI_BASE_URL =
-            "https://intellicampus-ai-e4pw.onrender.com/v1";
-
     private final AcademicBatchRepository batchRepository =
             new AcademicBatchRepository();
 
@@ -87,6 +70,8 @@ public class AITutorFragment extends Fragment {
     private EditText etMessage;
     private TextView tvContext;
     private View sendButton;
+
+    private AiProviderManager aiProviderManager;
 
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
@@ -129,6 +114,8 @@ public class AITutorFragment extends Fragment {
         uid = auth.getCurrentUser() == null
                 ? null
                 : auth.getCurrentUser().getUid();
+
+        aiProviderManager = new AiProviderManager(requireContext(), uid);
 
         chatContainer =
                 view.findViewById(R.id.chatContainer);
@@ -190,100 +177,181 @@ public class AITutorFragment extends Fragment {
         return view;
     }
 
-    private SharedPreferences prefs() {
-
-        return requireContext()
-                .getSharedPreferences(
-                        PREFS,
-                        Context.MODE_PRIVATE
-                );
-    }
-
-    /**
-     * Returns the fixed FreeLLMAPI Render endpoint.
-     */
-    private String baseUrl() {
-
-        return FREELLMAPI_BASE_URL;
-    }
-
-    /**
-     * Returns the locally saved API key if one exists.
-     *
-     * If the user has not manually entered a key, fall back
-     * to the BuildConfig value supplied through Gradle/local.properties.
-     */
-    private String apiKey() {
-
-        String savedKey =
-                prefs()
-                        .getString(KEY_API_KEY, "")
-                        .trim();
-
-        if (!savedKey.isEmpty()) {
-            return savedKey;
-        }
-
-        return BuildConfig.FREELLMAPI_KEY == null
-                ? ""
-                : BuildConfig.FREELLMAPI_KEY.trim();
-    }
-
     private void showSettings() {
+        if (!isAdded()) return;
 
-        if (!isAdded()) {
-            return;
+        View settingsView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_ai_provider_settings, null, false);
+
+        Spinner providerSpinner = settingsView.findViewById(R.id.spinnerAiProvider);
+        EditText modelInput = settingsView.findViewById(R.id.etAiModel);
+        EditText keyInput = settingsView.findViewById(R.id.etAiApiKey);
+        EditText baseUrlInput = settingsView.findViewById(R.id.etAiBaseUrl);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                requireContext(), R.array.ai_provider_names,
+                R.layout.item_ai_provider_spinner);
+        adapter.setDropDownViewResource(R.layout.item_ai_provider_spinner);
+        providerSpinner.setAdapter(adapter);
+
+        AiProviderConfig current;
+        try {
+            current = aiProviderManager.loadConfig();
+        } catch (Exception e) {
+            current = new AiProviderConfig(
+                    AiProviderConfig.FREELLMAPI,
+                    AiProviderConfig.defaultBaseUrl(AiProviderConfig.FREELLMAPI),
+                    AiProviderConfig.defaultModel(AiProviderConfig.FREELLMAPI), "");
         }
 
-        EditText key =
-                new EditText(requireContext());
+        final AiProviderConfig savedConfig = current;
+        int selectedIndex = adapter.getPosition(current.getProvider());
+        providerSpinner.setSelection(Math.max(0, selectedIndex));
+        modelInput.setText(current.getModel());
+        keyInput.setText(current.getApiKey());
+        baseUrlInput.setText(current.getBaseUrl());
+        updateBaseUrlEditing(providerSpinner, baseUrlInput);
 
-        key.setHint(
-                "FreeLLMAPI unified API key"
-        );
+        providerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View item, int position, long id) {
+                String provider = String.valueOf(parent.getItemAtPosition(position));
+                if (provider.equals(savedConfig.getProvider())) {
+                    modelInput.setText(savedConfig.getModel());
+                    keyInput.setText(savedConfig.getApiKey());
+                    baseUrlInput.setText(savedConfig.getBaseUrl());
+                } else {
+                    modelInput.setText(AiProviderConfig.defaultModel(provider));
+                    // Do not accidentally send one provider's key to another provider.
+                    keyInput.setText("");
+                    baseUrlInput.setText(AiProviderConfig.defaultBaseUrl(provider));
+                }
+                updateBaseUrlEditing(providerSpinner, baseUrlInput);
+            }
 
-        key.setSingleLine(true);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
 
-        key.setInputType(
-                0x00000081
-        );
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle("AI Provider Settings")
+                .setView(settingsView)
+                .setPositiveButton("Save", null)
+                .setNeutralButton("Test connection", null)
+                .setNegativeButton("Cancel", null)
+                .create();
 
-        key.setText(apiKey());
+        settingsView.findViewById(R.id.btnRemoveAiConfig).setOnClickListener(v -> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Remove AI configuration?")
+                    .setMessage("This removes the saved API key and provider settings for this student on this device.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Remove", (confirm, which) -> {
+                        aiProviderManager.clearConfig();
+                        Toast.makeText(requireContext(), "AI provider configuration removed", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    })
+                    .show();
+        });
 
-        new AlertDialog.Builder(requireContext())
-                .setTitle("AI Tutor Settings")
-                .setMessage(
-                        "The FreeLLMAPI server is fixed by Intellicampus. "
-                                + "Only the unified API key can be changed here. "
-                                + "The key is stored locally on this device."
-                )
-                .setView(key)
-                .setPositiveButton(
-                        "Save",
-                        (d, w) -> {
+        dialog.setOnShowListener(ignored -> {
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(
+                        new android.graphics.drawable.ColorDrawable(
+                                requireContext().getColor(R.color.ai_surface)));
+            }
+            TextView dialogTitle = dialog.findViewById(androidx.appcompat.R.id.alertTitle);
+            if (dialogTitle != null) {
+                dialogTitle.setTextColor(requireContext().getColor(R.color.ai_text_primary));
+            }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(
+                    requireContext().getColor(R.color.ai_accent));
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(
+                    requireContext().getColor(R.color.ai_accent));
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(
+                    requireContext().getColor(R.color.ai_text_secondary));
 
-                            prefs()
-                                    .edit()
-                                    .putString(
-                                            KEY_API_KEY,
-                                            key.getText()
-                                                    .toString()
-                                                    .trim()
-                                    )
-                                    .apply();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                AiProviderConfig config = readConfigFromSettings(
+                        providerSpinner, modelInput, keyInput, baseUrlInput);
+                try {
+                    aiProviderManager.saveConfig(config);
+                    Toast.makeText(requireContext(), "AI provider settings saved securely",
+                            Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
 
-                            Toast.makeText(
-                                    requireContext(),
-                                    "AI Tutor settings saved",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                        }
-                )
-                .setNegativeButton(
-                        "Cancel",
-                        null
-                )
-                .show();
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+                AiProviderConfig config = readConfigFromSettings(
+                        providerSpinner, modelInput, keyInput, baseUrlInput);
+                try {
+                    aiProviderManager.validate(config);
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(false);
+                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setText("Testing…");
+                executor.execute(() -> {
+                    String result;
+                    boolean success;
+                    try {
+                        result = aiProviderManager.testConnection(config);
+                        success = true;
+                    } catch (Exception e) {
+                        result = e.getMessage() == null ? "Connection failed." : e.getMessage();
+                        success = false;
+                    }
+                    final String message = result;
+                    final boolean connected = success;
+                    if (isAdded()) requireActivity().runOnUiThread(() -> {
+                        if (!dialog.isShowing()) return;
+                        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
+                        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setText("Test connection");
+                        new AlertDialog.Builder(requireContext())
+                                .setTitle(connected ? "Connection successful" : "Connection failed")
+                                .setMessage(message)
+                                .setPositiveButton("OK", null)
+                                .show();
+                    });
+                });
+            });
+        });
+        dialog.show();
+    }
+
+    private void updateBaseUrlEditing(Spinner providerSpinner, EditText baseUrlInput) {
+        String provider = String.valueOf(providerSpinner.getSelectedItem());
+        boolean custom = AiProviderConfig.CUSTOM.equals(provider);
+        baseUrlInput.setEnabled(custom);
+        baseUrlInput.setAlpha(custom ? 1f : 0.72f);
+    }
+
+    private AiProviderConfig readConfigFromSettings(
+            Spinner providerSpinner, EditText modelInput,
+            EditText keyInput, EditText baseUrlInput) {
+        String provider = String.valueOf(providerSpinner.getSelectedItem());
+        String baseUrl = AiProviderConfig.CUSTOM.equals(provider)
+                ? baseUrlInput.getText().toString().trim()
+                : AiProviderConfig.defaultBaseUrl(provider);
+        return new AiProviderConfig(
+                provider,
+                baseUrl,
+                modelInput.getText().toString().trim(),
+                keyInput.getText().toString().trim());
+    }
+
+    private boolean hasConfiguredApiKey() {
+        try {
+            return !aiProviderManager.loadConfig().getApiKey().trim().isEmpty();
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to read encrypted AI provider settings", e);
+            return false;
+        }
     }
 
     private void startNewChat(
@@ -335,16 +403,11 @@ public class AITutorFragment extends Fragment {
             return;
         }
 
-        if (apiKey().isEmpty()) {
-
+        if (!hasConfiguredApiKey()) {
             showSettings();
-
-            Toast.makeText(
-                    requireContext(),
-                    "Add your FreeLLMAPI unified API key first.",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+            Toast.makeText(requireContext(),
+                    "Configure an AI provider and API key first.",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -362,7 +425,7 @@ public class AITutorFragment extends Fragment {
             try {
 
                 String answer =
-                        callFreeLLMAPI(text);
+                        callAiProvider();
 
                 if (isAdded()) {
 
@@ -397,7 +460,7 @@ public class AITutorFragment extends Fragment {
 
                                 addMessage(
                                         "assistant",
-                                        "I couldn't get a response from FreeLLMAPI.\n\n"
+                                        "I couldn't get a response from your AI provider.\n\n"
                                                 + e.getMessage()
                                 );
                             });
@@ -428,225 +491,25 @@ public class AITutorFragment extends Fragment {
         }
     }
 
-    private String callFreeLLMAPI(
-            String latestUserMessage
-    ) throws Exception {
+    private String callAiProvider() throws Exception {
+        AiProviderConfig config = aiProviderManager.loadConfig();
+        JSONArray apiMessages = new JSONArray();
 
-        URL url =
-                new URL(
-                        baseUrl()
-                                + "/chat/completions"
-                );
-
-        HttpURLConnection connection =
-                (HttpURLConnection)
-                        url.openConnection();
-
-        connection.setRequestMethod("POST");
-
-        connection.setConnectTimeout(
-                10000
-        );
-
-        connection.setReadTimeout(
-                60000
-        );
-
-        connection.setDoOutput(true);
-
-        connection.setRequestProperty(
-                "Content-Type",
-                "application/json"
-        );
-
-        connection.setRequestProperty(
-                "Authorization",
-                "Bearer " + apiKey()
-        );
-
-        JSONArray apiMessages =
-                new JSONArray();
-
-        JSONObject system =
-                new JSONObject();
-
-        system.put(
-                "role",
-                "system"
-        );
-
-        system.put(
-                "content",
-                buildSystemPrompt()
-        );
-
+        JSONObject system = new JSONObject();
+        system.put("role", "system");
+        system.put("content", buildSystemPrompt());
         apiMessages.put(system);
 
-        int start =
-                Math.max(
-                        0,
-                        messages.size() - 12
-                );
-
-        for (
-                int i = start;
-                i < messages.size();
-                i++
-        ) {
-
-            Map<String, String> message =
-                    messages.get(i);
-
-            JSONObject item =
-                    new JSONObject();
-
-            item.put(
-                    "role",
-                    message.get("role")
-            );
-
-            item.put(
-                    "content",
-                    message.get("content")
-            );
-
+        int start = Math.max(0, messages.size() - 12);
+        for (int i = start; i < messages.size(); i++) {
+            Map<String, String> message = messages.get(i);
+            JSONObject item = new JSONObject();
+            item.put("role", message.get("role"));
+            item.put("content", message.get("content"));
             apiMessages.put(item);
         }
 
-        JSONObject body =
-                new JSONObject();
-
-        body.put(
-                "model",
-                "auto"
-        );
-
-        body.put(
-                "messages",
-                apiMessages
-        );
-
-        body.put(
-                "temperature",
-                0.4
-        );
-
-        byte[] bytes =
-                body.toString()
-                        .getBytes(
-                                StandardCharsets.UTF_8
-                        );
-
-        try (
-                OutputStream output =
-                        connection.getOutputStream()
-        ) {
-
-            output.write(bytes);
-        }
-
-        int code =
-                connection.getResponseCode();
-
-        InputStream stream =
-                code >= 200 && code < 300
-                        ? connection.getInputStream()
-                        : connection.getErrorStream();
-
-        String response =
-                readStream(stream);
-
-        connection.disconnect();
-
-        if (code < 200 || code >= 300) {
-
-            throw new Exception(
-                    "FreeLLMAPI HTTP "
-                            + code
-                            + ": "
-                            + response
-            );
-        }
-
-        JSONObject json =
-                new JSONObject(response);
-
-        JSONArray choices =
-                json.optJSONArray(
-                        "choices"
-                );
-
-        if (choices == null ||
-                choices.length() == 0) {
-
-            throw new Exception(
-                    "No choices returned by FreeLLMAPI."
-            );
-        }
-
-        JSONObject message =
-                choices
-                        .getJSONObject(0)
-                        .optJSONObject("message");
-
-        if (message == null) {
-
-            throw new Exception(
-                    "Invalid response from FreeLLMAPI."
-            );
-        }
-
-        String content =
-                message
-                        .optString(
-                                "content",
-                                ""
-                        )
-                        .trim();
-
-        if (content.isEmpty()) {
-
-            throw new Exception(
-                    "The model returned an empty response."
-            );
-        }
-
-        return content;
-    }
-
-    private String readStream(
-            InputStream stream
-    ) throws Exception {
-
-        if (stream == null) {
-            return "";
-        }
-
-        StringBuilder result =
-                new StringBuilder();
-
-        try (
-                BufferedReader reader =
-                        new BufferedReader(
-                                new InputStreamReader(
-                                        stream,
-                                        StandardCharsets.UTF_8
-                                )
-                        )
-        ) {
-
-            String line;
-
-            while (
-                    (line = reader.readLine())
-                            != null
-            ) {
-
-                result.append(line);
-            }
-        }
-
-        return result.toString();
+        return aiProviderManager.createChatCompletion(config, apiMessages, 0.4);
     }
 
     private String buildSystemPrompt() {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.ayushman.intellicampus.R;
+import com.ayushman.intellicampus.fragments.StudentHubFragment;
+import com.ayushman.intellicampus.fragments.StudyPlannerFragment;
 import com.ayushman.intellicampus.databinding.FragmentAcademicsBinding;
 import com.ayushman.intellicampus.models.Assignment;
 import com.ayushman.intellicampus.viewmodels.AssignmentViewModel;
@@ -57,12 +58,11 @@ public class AcademicsFragment extends Fragment {
         binding.cardNotes.setOnClickListener(v ->
                 openSubjects());
 
-        binding.cardAttendance.setOnClickListener(v ->
-                Toast.makeText(
-                        requireContext(),
-                        "Attendance module coming soon",
-                        Toast.LENGTH_SHORT
-                ).show());
+        binding.cardCommunity.setOnClickListener(v ->
+                openFeature(new StudentHubFragment()));
+
+        binding.cardStudyPlanner.setOnClickListener(v ->
+                openFeature(new StudyPlannerFragment()));
     }
 
     private void setupAssignmentViewModel() {
@@ -142,6 +142,15 @@ public class AcademicsFragment extends Fragment {
         );
 
         startActivity(intent);
+    }
+
+    private void openFeature(Fragment fragment) {
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
