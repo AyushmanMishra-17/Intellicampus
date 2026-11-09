@@ -1,6 +1,7 @@
 package com.ayushman.intellicampus.fragments;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -24,12 +25,14 @@ import com.ayushman.intellicampus.R;
 import com.ayushman.intellicampus.constants.FirestoreConstants;
 import com.ayushman.intellicampus.constants.UserConstants;
 import com.ayushman.intellicampus.firebase.FirestoreManager;
+import com.ayushman.intellicampus.utils.PdfExportManager;
 import com.ayushman.intellicampus.models.AcademicBatch;
 import com.ayushman.intellicampus.models.Practical;
 import com.ayushman.intellicampus.models.Subject;
 import com.ayushman.intellicampus.models.Unit;
 import com.ayushman.intellicampus.repositories.AcademicBatchRepository;
 import com.ayushman.intellicampus.repositories.StudyRepository;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -1146,6 +1149,68 @@ public class AITutorFragment extends Fragment {
                 bubbleParams
         );
 
+        // Offer PDF export for substantive AI responses.
+        if (!isUser && content != null && content.trim().length() >= 100) {
+            MaterialButton exportButton = new MaterialButton(
+                    requireContext(),
+                    null,
+                    com.google.android.material.R.attr.materialButtonOutlinedStyle
+            );
+            exportButton.setText("Download PDF");
+            exportButton.setAllCaps(false);
+            exportButton.setTextSize(12f);
+            exportButton.setTypeface(
+                    exportButton.getTypeface(),
+                    android.graphics.Typeface.BOLD
+            );
+            exportButton.setMinHeight(dp(38));
+            exportButton.setInsetTop(0);
+            exportButton.setInsetBottom(0);
+            exportButton.setCornerRadius(dp(12));
+            exportButton.setStrokeWidth(dp(1));
+            exportButton.setStrokeColor(ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(
+                            requireContext(), R.color.ai_border
+                    )
+            ));
+            exportButton.setBackgroundTintList(ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(
+                            requireContext(), R.color.ai_surface_2
+                    )
+            ));
+            exportButton.setTextColor(
+                    androidx.core.content.ContextCompat.getColor(
+                            requireContext(), R.color.ai_text_primary
+                    )
+            );
+            exportButton.setIconResource(android.R.drawable.ic_menu_save);
+            exportButton.setIconTint(ColorStateList.valueOf(
+                    androidx.core.content.ContextCompat.getColor(
+                            requireContext(), R.color.ai_accent
+                    )
+            ));
+            exportButton.setIconSize(dp(16));
+            exportButton.setIconPadding(dp(8));
+            exportButton.setPadding(dp(14), 0, dp(14), 0);
+            exportButton.setContentDescription("Download this AI response as a PDF");
+            exportButton.setOnClickListener(v ->
+                    PdfExportManager.exportToDownloads(
+                            requireContext(),
+                            "AI Tutor Study Notes",
+                            content
+                    )
+            );
+
+            LinearLayout.LayoutParams exportParams =
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            dp(40)
+                    );
+            exportParams.topMargin = dp(8);
+            exportParams.gravity = android.view.Gravity.START;
+            wrapper.addView(exportButton, exportParams);
+        }
+
         chatContainer.addView(
                 wrapper
         );
@@ -1584,6 +1649,12 @@ public class AITutorFragment extends Fragment {
                     "This conversation has no messages."
             );
         }
+    }
+
+    private int dp(float value) {
+        return Math.round(
+                value * getResources().getDisplayMetrics().density
+        );
     }
 
     @Override

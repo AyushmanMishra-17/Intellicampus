@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp"
+    android:background="@color/background">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="My Subjects"
         android:textStyle="bold"
-        android:textSize="28sp"/>
+        android:textSize="30sp"/>
 
     <TextView
         android:id="@+id/tvSubtitle"

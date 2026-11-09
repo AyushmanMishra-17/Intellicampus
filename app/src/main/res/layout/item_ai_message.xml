@@ -3,22 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
     <TextView
         android:id="@+id/tvMessageRole"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:textSize="12sp"
-        android:textColor="@color/textSecondary" />
+        android:textSize="10sp"
+        android:letterSpacing="0.08"
+        android:textColor="@color/ai_accent"/>
+
     <TextView
         android:id="@+id/tvMessageText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="15sp"
-        android:textColor="@color/textPrimary"
-        android:lineSpacingExtra="4dp"
-        android:padding="12dp"
-        android:background="@drawable/bg_category_chip" />
+        android:layout_marginTop="6dp"
+        android:textSize="14sp"
+        android:textColor="@color/ai_text_primary"
+        android:lineSpacingExtra="5dp"
+        android:padding="16dp"
+        android:background="@drawable/bg_ai_message"/>
 </LinearLayout>

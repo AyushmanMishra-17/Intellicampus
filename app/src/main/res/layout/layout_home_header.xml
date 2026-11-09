@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="20dp"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    android:layout_marginTop="30dp">
+    app:cardCornerRadius="26dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/primary"
+    android:layout_marginTop="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="169dp"
         android:orientation="vertical"
         android:padding="24dp">
 
@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🌙 Good Evening"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@color/secondary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -32,8 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:text="Ayushman Mishra"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="30sp"
+            android:textColor="@color/white"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Welcome back! Here's what's happening today."
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textColor="#DCE4FF"
             android:textSize="15sp" />
 
     </LinearLayout>

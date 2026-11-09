@@ -1,51 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Brand -->
-    <color name="primary">#2563EB</color>
-    <color name="primary_variant">#1D4ED8</color>
-    <color name="secondary">#38BDF8</color>
-
-    <!-- Backgrounds -->
-    <color name="background">#F8FAFC</color>
+    <!-- Carbon Cobalt design system -->
+    <color name="primary">#4263EB</color>
+    <color name="primary_variant">#3048B8</color>
+    <color name="secondary">#F2A66A</color>
+    <color name="background">#F4F6FC</color>
     <color name="surface">#FFFFFF</color>
-
-    <!-- Text -->
-    <color name="textPrimary">#212121</color>
-    <color name="textSecondary">#757575</color>
-
-    <!-- Borders -->
-    <color name="outline">#E5E7EB</color>
-
-    <!-- Status -->
-    <color name="success">#22C55E</color>
-    <color name="warning">#F59E0B</color>
-    <color name="error">#EF4444</color>
-
-
-    <!-- Misc -->
+    <color name="textPrimary">#17213A</color>
+    <color name="text_primary">#17213A</color>
+    <color name="textSecondary">#68738D</color>
+    <color name="text_secondary">#68738D</color>
+    <color name="outline">#E1E6F2</color>
+    <color name="success">#27845D</color>
+    <color name="warning">#B7791F</color>
+    <color name="error">#C44355</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="priority_low">#4CAF50</color>
-    <color name="priority_medium">#FFC107</color>
-    <color name="priority_high">#F44336</color>
-
-    <!-- AI Tutor -->
-    <color name="ai_background">#0D1428</color>
-    <color name="ai_surface">#172139</color>
-    <color name="ai_surface_2">#1D2944</color>
-    <color name="ai_text_primary">#F4F7FF</color>
-    <color name="ai_text_secondary">#AAB5CC</color>
-    <color name="ai_hint">#7F8BA5</color>
-    <color name="ai_accent">#65A6FF</color>
-    <color name="ai_action_blue">#315A91</color>
-    <color name="ai_user">#2563EB</color>
-    <color name="ai_border">#33415F</color>
-    <color name="intellicampus_navy">#0B1F44</color>
-    <color name="intellicampus_blue">#1E63FF</color>
-    <color name="intellicampus_cyan">#00D1FF</color>
-    <color name="intellicampus_gold">#FFC107</color>
-    <color name="intellicampus_light">#E8F3FF</color>
-
-
+    <color name="priority_low">#27845D</color>
+    <color name="priority_medium">#B7791F</color>
+    <color name="priority_high">#C44355</color>
+    <color name="ai_background">#0D1426</color>
+    <color name="ai_surface">#151F36</color>
+    <color name="ai_surface_2">#1D2A46</color>
+    <color name="ai_text_primary">#F4F6FF</color>
+    <color name="ai_text_secondary">#B5C0D8</color>
+    <color name="ai_hint">#8290AC</color>
+    <color name="ai_accent">#8BA5FF</color>
+    <color name="ai_accent_secondary">#F2A66A</color>
+    <color name="ai_action_blue">#263B67</color>
+    <color name="ai_user">#263B67</color>
+    <color name="ai_border">#344361</color>
+    <color name="intellicampus_navy">#17213A</color>
+    <color name="intellicampus_blue">#4263EB</color>
+    <color name="intellicampus_cyan">#8BA5FF</color>
+    <color name="intellicampus_gold">#F2A66A</color>
+    <color name="intellicampus_light">#E9EDFF</color>
 </resources>

@@ -6,8 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp">
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/outline"
+    app:strokeWidth="1dp"
+    android:layout_marginTop="24dp">
 
 
     <LinearLayout
@@ -40,7 +43,7 @@
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="12dp"
-            android:background="#DDDDDD"/>
+            android:background="@color/outline"/>
 
         <!-- Class Details -->
 
@@ -93,7 +96,7 @@
                 android:layout_marginTop="2dp"
                 android:text="Room 302"
                 android:textSize="13sp"
-                android:textColor="#777777"/>
+                android:textColor="@color/text_secondary"/>
 
 
             </LinearLayout>

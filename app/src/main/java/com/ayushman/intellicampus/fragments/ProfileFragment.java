@@ -82,6 +82,12 @@ public class ProfileFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(document -> {
 
+                    // Firestore may finish after this Fragment's view is destroyed.
+                    // Never access ViewBinding unless the view is still available.
+                    if (!isViewReady()) {
+                        return;
+                    }
+
                     if (!document.exists()) {
                         return;
                     }
@@ -187,6 +193,10 @@ public class ProfileFragment extends Fragment {
                             AcademicBatch batch
                     ) {
 
+                        if (!isViewReady()) {
+                            return;
+                        }
+
                         binding.tvAcademicBatch.setText(
                                 "Batch: " +
                                         batch.getBatch() +
@@ -199,6 +209,10 @@ public class ProfileFragment extends Fragment {
 
                     @Override
                     public void onError(Exception e) {
+
+                        if (!isViewReady()) {
+                            return;
+                        }
 
                         binding.tvAcademicBatch.setText(
                                 "Batch: " + batchName
@@ -963,6 +977,14 @@ public class ProfileFragment extends Fragment {
                                 .getDisplayMetrics()
                                 .density
         );
+    }
+
+    /**
+     * Checks whether this Fragment is attached and its view binding is still valid.
+     * Async Firestore callbacks can arrive after onDestroyView().
+     */
+    private boolean isViewReady() {
+        return isAdded() && binding != null && getView() != null;
     }
 
     @Override

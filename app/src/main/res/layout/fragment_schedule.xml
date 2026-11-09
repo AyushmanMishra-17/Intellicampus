@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".fragments.ScheduleFragment">
+    tools:context=".fragments.ScheduleFragment"
+    android:background="@color/background">
 
     <LinearLayout
         android:id="@+id/contentLayout"
@@ -28,8 +29,8 @@
             android:layout_height="wrap_content"
             android:text="Class Schedule"
             android:textStyle="bold"
-            android:textSize="28sp"
-            android:paddingTop="25dp"/>
+            android:textSize="30sp"
+            />
 
         <TextView
             android:id="@+id/tvSubtitle"

@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:text="Quick Actions"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        />
 
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/gridQuickActions"
@@ -29,10 +30,10 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAssignment"
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="108dp"
             android:layout_margin="6dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
             app:layout_columnWeight="1">
 
             <LinearLayout
@@ -62,10 +63,10 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardSchedule"
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="108dp"
             android:layout_margin="6dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
             app:layout_columnWeight="1">
 
             <LinearLayout
@@ -95,10 +96,10 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardNotice"
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="108dp"
             android:layout_margin="6dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
             app:layout_columnWeight="1">
 
             <LinearLayout
@@ -128,10 +129,10 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardAiTutor"
             android:layout_width="0dp"
-            android:layout_height="120dp"
+            android:layout_height="108dp"
             android:layout_margin="6dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="22dp"
+            app:cardElevation="0dp"
             app:layout_columnWeight="1">
 
             <LinearLayout

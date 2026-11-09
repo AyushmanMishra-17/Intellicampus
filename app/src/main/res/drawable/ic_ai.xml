@@ -1,20 +1,62 @@
-<!--
-  ~ Copyright (C) 2026 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
-        
-    <path android:fillColor="#FF000000" android:pathData="M17.6,11.48 L19.44,8.3a0.63,0.63 0,0 0,-1.09 -0.63l-1.88,3.24a11.43,11.43 0,0 0,-8.94 0L5.65,7.67a0.63,0.63 0,0 0,-1.09 0.63L6.4,11.48A10.81,10.81 0,0 0,1 20L23,20A10.81,10.81 0,0 0,17.6 11.48ZM7,17.25A1.25,1.25 0,1 1,8.25 16,1.25 1.25,0 0,1 7,17.25ZM17,17.25A1.25,1.25 0,1 1,18.25 16,1.25 1.25,0 0,1 17,17.25Z"/>
-    
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Rounded square -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M7,3.5 H17
+            C19.2,3.5 20.5,4.8 20.5,7
+            V17
+            C20.5,19.2 19.2,20.5 17,20.5
+            H7
+            C4.8,20.5 3.5,19.2 3.5,17
+            V7
+            C3.5,4.8 4.8,3.5 7,3.5 Z" />
+
+    <!-- AI lettering -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M7.5,15.5 L10.5,8.5 L13.5,15.5
+            M8.7,12.8 H12.3
+            M16.5,8.5 V15.5" />
+
+    <!-- Top-right sparkle -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M17.5,4.8
+            C17.5,6 18,6.5 19.2,6.5
+            C18,6.5 17.5,7 17.5,8.2
+            C17.5,7 17,6.5 15.8,6.5
+            C17,6.5 17.5,6 17.5,4.8 Z" />
+
+    <!-- Bottom-left sparkle -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M5.8,15.8
+            C5.8,16.7 6.2,17.1 7.1,17.1
+            C6.2,17.1 5.8,17.5 5.8,18.4
+            C5.8,17.5 5.4,17.1 4.5,17.1
+            C5.4,17.1 5.8,16.7 5.8,15.8 Z" />
+
+    <!-- Small sparkle -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M18.2,15.2
+            C18.2,15.8 18.5,16.1 19.1,16.1
+            C18.5,16.1 18.2,16.4 18.2,17
+            C18.2,16.4 17.9,16.1 17.3,16.1
+            C17.9,16.1 18.2,15.8 18.2,15.2 Z" />
+
 </vector>
