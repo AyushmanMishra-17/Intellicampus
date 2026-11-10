@@ -174,7 +174,9 @@ Potential areas for future development include:
 ---
 ## 📄 License
 
-Add the appropriate license file and license information here before distributing the project under an open-source license.
+MIT License
+
+Copyright (c) 2026 Ayushman Mishra
 
 ---
 
