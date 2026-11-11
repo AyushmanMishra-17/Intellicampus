@@ -3,6 +3,8 @@ package com.ayushman.intellicampus.fragments;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -187,12 +189,40 @@ public class AITutorFragment extends Fragment {
         EditText modelInput = settingsView.findViewById(R.id.etAiModel);
         EditText keyInput = settingsView.findViewById(R.id.etAiApiKey);
         EditText baseUrlInput = settingsView.findViewById(R.id.etAiBaseUrl);
+        MaterialButton fetchModelsButton = settingsView.findViewById(R.id.btnFetchAiModels);
+        TextView selectedModelLabel = settingsView.findViewById(R.id.tvAiSelectedModel);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                requireContext(), R.array.ai_provider_names,
-                R.layout.item_ai_provider_spinner);
-        adapter.setDropDownViewResource(R.layout.item_ai_provider_spinner);
+        String[] providerNames = getResources().getStringArray(R.array.ai_provider_names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                requireContext(), R.layout.item_ai_provider_spinner, providerNames) {
+            private View bindProviderRow(int position, View convertView, android.view.ViewGroup parent,
+                                         boolean dropdown) {
+                View row = LayoutInflater.from(requireContext()).inflate(
+                        dropdown ? R.layout.item_ai_provider_dropdown
+                                : R.layout.item_ai_provider_spinner, parent, false);
+                String providerName = getItem(position);
+                if (dropdown) {
+                    TextView title = row.findViewById(R.id.tvDropdownTitle);
+                    TextView subtitle = row.findViewById(R.id.tvDropdownSubtitle);
+                    title.setText(providerName);
+                    subtitle.setText(providerDescription(providerName));
+                } else {
+                    ((TextView) row).setText(providerName);
+                }
+                return row;
+            }
+
+            @Override public View getView(int position, View convertView, android.view.ViewGroup parent) {
+                return bindProviderRow(position, convertView, parent, false);
+            }
+
+            @Override public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
+                return bindProviderRow(position, convertView, parent, true);
+            }
+        };
         providerSpinner.setAdapter(adapter);
+        providerSpinner.setDropDownWidth(android.view.ViewGroup.LayoutParams.MATCH_PARENT);
+        providerSpinner.setDropDownVerticalOffset(6);
 
         AiProviderConfig current;
         try {
@@ -208,6 +238,7 @@ public class AITutorFragment extends Fragment {
         int selectedIndex = adapter.getPosition(current.getProvider());
         providerSpinner.setSelection(Math.max(0, selectedIndex));
         modelInput.setText(current.getModel());
+        updateSelectedModelLabel(selectedModelLabel, current.getModel(), false);
         keyInput.setText(current.getApiKey());
         baseUrlInput.setText(current.getBaseUrl());
         updateBaseUrlEditing(providerSpinner, baseUrlInput);
@@ -218,10 +249,13 @@ public class AITutorFragment extends Fragment {
                 String provider = String.valueOf(parent.getItemAtPosition(position));
                 if (provider.equals(savedConfig.getProvider())) {
                     modelInput.setText(savedConfig.getModel());
+                    updateSelectedModelLabel(selectedModelLabel, savedConfig.getModel(), false);
                     keyInput.setText(savedConfig.getApiKey());
                     baseUrlInput.setText(savedConfig.getBaseUrl());
                 } else {
                     modelInput.setText(AiProviderConfig.defaultModel(provider));
+                    updateSelectedModelLabel(selectedModelLabel,
+                            AiProviderConfig.defaultModel(provider), false);
                     // Do not accidentally send one provider's key to another provider.
                     keyInput.setText("");
                     baseUrlInput.setText(AiProviderConfig.defaultBaseUrl(provider));
@@ -231,6 +265,85 @@ public class AITutorFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        modelInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateSelectedModelLabel(selectedModelLabel, s.toString(), false);
+            }
+            @Override public void afterTextChanged(Editable editable) { }
+        });
+
+        fetchModelsButton.setOnClickListener(v -> {
+            AiProviderConfig config = readConfigFromSettings(
+                    providerSpinner, modelInput, keyInput, baseUrlInput);
+            if (config.getApiKey().trim().isEmpty()) {
+                Toast.makeText(requireContext(), "Enter the provider API key first.",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            fetchModelsButton.setEnabled(false);
+            fetchModelsButton.setText("Fetching models…");
+            executor.execute(() -> {
+                List<AiProviderManager.AiModelInfo> models;
+                String error = null;
+                try {
+                    models = aiProviderManager.fetchModels(config);
+                } catch (Exception e) {
+                    models = new ArrayList<>();
+                    error = e.getMessage() == null
+                            ? "Unable to fetch models. You can enter a model ID manually." : e.getMessage();
+                }
+                final List<AiProviderManager.AiModelInfo> availableModels = models;
+                final String fetchError = error;
+                if (isAdded()) requireActivity().runOnUiThread(() -> {
+                    if (!fetchModelsButton.isAttachedToWindow()) return;
+                    fetchModelsButton.setEnabled(true);
+                    fetchModelsButton.setText("Fetch available models");
+                    if (fetchError != null) {
+                        new AlertDialog.Builder(requireContext())
+                                .setTitle("Model discovery unavailable")
+                                .setMessage(fetchError)
+                                .setPositiveButton("OK", null)
+                                .show();
+                        return;
+                    }
+                    ArrayAdapter<AiProviderManager.AiModelInfo> modelAdapter =
+                            new ArrayAdapter<AiProviderManager.AiModelInfo>(
+                                    requireContext(), R.layout.item_ai_model_dropdown, availableModels) {
+                                private View createModelRow(int position, android.view.ViewGroup parent) {
+                                    View row = LayoutInflater.from(requireContext()).inflate(
+                                            R.layout.item_ai_model_dropdown, parent, false);
+                                    AiProviderManager.AiModelInfo model = getItem(position);
+                                    ((TextView) row.findViewById(R.id.tvModelDisplayName))
+                                            .setText(model.getDisplayName());
+                                    ((TextView) row.findViewById(R.id.tvModelId)).setText(model.getId());
+                                    TextView recommended = row.findViewById(R.id.tvModelRecommended);
+                                    recommended.setVisibility(model.isRecommended() ? View.VISIBLE : View.GONE);
+                                    return row;
+                                }
+
+                                @Override public View getView(int position, View convertView, android.view.ViewGroup parent) {
+                                    return createModelRow(position, parent);
+                                }
+
+                                @Override public View getDropDownView(int position, View convertView, android.view.ViewGroup parent) {
+                                    return createModelRow(position, parent);
+                                }
+                            };
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Choose an AI model")
+                            .setAdapter(modelAdapter, (modelDialog, which) -> {
+                                AiProviderManager.AiModelInfo selected = availableModels.get(which);
+                                modelInput.setText(selected.getId());
+                                updateSelectedModelLabel(selectedModelLabel,
+                                        selected.getDisplayName() + " (" + selected.getId() + ")", false);
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                });
+            });
         });
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
@@ -304,6 +417,12 @@ public class AITutorFragment extends Fragment {
                         success = true;
                     } catch (Exception e) {
                         result = e.getMessage() == null ? "Connection failed." : e.getMessage();
+                        if (result.contains("HTTP 404")) {
+                            result += "\n\nNext step: tap “Fetch available models”, choose a listed model, and test again. "
+                                    + "The app will not switch models without your approval.";
+                        } else if (result.contains("HTTP 403")) {
+                            result += "\n\nNext step: check that this API key has access to the selected model and project.";
+                        }
                         success = false;
                     }
                     final String message = result;
@@ -312,6 +431,9 @@ public class AITutorFragment extends Fragment {
                         if (!dialog.isShowing()) return;
                         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(true);
                         dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setText("Test connection");
+                        if (connected) {
+                            updateSelectedModelLabel(selectedModelLabel, config.getModel(), true);
+                        }
                         new AlertDialog.Builder(requireContext())
                                 .setTitle(connected ? "Connection successful" : "Connection failed")
                                 .setMessage(message)
@@ -329,6 +451,35 @@ public class AITutorFragment extends Fragment {
         boolean custom = AiProviderConfig.CUSTOM.equals(provider);
         baseUrlInput.setEnabled(custom);
         baseUrlInput.setAlpha(custom ? 1f : 0.72f);
+    }
+
+    private String providerDescription(String provider) {
+        if (provider == null) return "AI service provider";
+        switch (provider) {
+            case AiProviderConfig.GEMINI: return "Google · Gemini models";
+            case AiProviderConfig.OPENAI: return "OpenAI · GPT models";
+            case AiProviderConfig.ANTHROPIC: return "Anthropic · Claude models";
+            case AiProviderConfig.COHERE: return "Cohere · Command models";
+            case AiProviderConfig.GROQ: return "Groq · Fast inference";
+            case AiProviderConfig.OPENROUTER: return "OpenRouter · Multiple AI models";
+            case AiProviderConfig.TOGETHER: return "Together AI · Hosted open models";
+            case AiProviderConfig.FIREWORKS: return "Fireworks AI · Model inference";
+            case AiProviderConfig.MISTRAL: return "Mistral AI · Mistral models";
+            case AiProviderConfig.DEEPSEEK: return "DeepSeek · Reasoning and chat";
+            case AiProviderConfig.XAI: return "xAI · Grok models";
+            case AiProviderConfig.PERPLEXITY: return "Perplexity · Search-focused AI";
+            case AiProviderConfig.CEREBRAS: return "Cerebras · Fast inference";
+            case AiProviderConfig.SAMBANOVA: return "SambaNova · AI inference";
+            case AiProviderConfig.FREELLMAPI: return "IntelliCampus hosted AI service";
+            default: return "Custom OpenAI-compatible endpoint";
+        }
+    }
+
+    private void updateSelectedModelLabel(TextView label, String model, boolean validated) {
+        if (label == null) return;
+        String value = model == null || model.trim().isEmpty()
+                ? "No model selected" : model.trim();
+        label.setText((validated ? "Connection verified: " : "Selected model: ") + value);
     }
 
     private AiProviderConfig readConfigFromSettings(

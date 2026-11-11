@@ -3,10 +3,19 @@
     <string-array name="ai_provider_names">
         <item>FreeLLMAPI</item>
         <item>OpenAI</item>
+        <item>Google Gemini</item>
+        <item>Anthropic Claude</item>
+        <item>Cohere</item>
         <item>Groq</item>
         <item>OpenRouter</item>
         <item>Together AI</item>
         <item>Fireworks AI</item>
+        <item>Mistral AI</item>
+        <item>DeepSeek</item>
+        <item>xAI</item>
+        <item>Perplexity</item>
+        <item>Cerebras</item>
+        <item>SambaNova</item>
         <item>Custom OpenAI-compatible</item>
     </string-array>
 </resources>

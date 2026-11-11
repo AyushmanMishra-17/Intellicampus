@@ -42,7 +42,9 @@
             android:background="@drawable/bg_ai_input"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:popupBackground="@color/ai_surface_2" />
+            android:popupBackground="@drawable/bg_ai_dropdown_field"
+            android:dropDownVerticalOffset="6dp"
+            android:dropDownWidth="match_parent" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -67,6 +69,29 @@
             android:textColor="@color/ai_text_primary"
             android:textColorHint="@color/ai_hint"
             android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvAiSelectedModel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-8dp"
+            android:layout_marginBottom="12dp"
+            android:text="Selected model: not validated yet"
+            android:textColor="@color/ai_hint"
+            android:textSize="11sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFetchAiModels"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="-6dp"
+            android:layout_marginBottom="14dp"
+            android:text="Fetch available models"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:textColor="@color/ai_accent" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -134,7 +159,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Supports FreeLLMAPI and providers that expose the OpenAI-compatible Chat Completions API. Custom endpoints must use HTTPS. Provider usage charges and limits may apply."
+            android:text="Uses official provider APIs where available. OpenAI and xAI use Responses APIs; Gemini, Anthropic and Cohere use their native request formats; other listed providers use their documented chat endpoint. Fetch models to see friendly names and compatible model IDs. Test connection to verify account access. Custom endpoints must use HTTPS."
             android:textColor="@color/ai_hint"
             android:textSize="11sp"
             android:lineSpacingExtra="2dp" />
